@@ -472,17 +472,21 @@ public class GWTUtil {
 			ParseException, NoSuchGroupException, AccessDeniedException, PathNotFoundException, RepositoryException, DatabaseException {
 		GWTQueryResult gwtQueryResult = new GWTQueryResult();
 
-		if (queryResult.getDocument() != null) {
-			gwtQueryResult.setDocument(copy(queryResult.getDocument(), workspace));
-			gwtQueryResult.getDocument().setAttachment(false);
-		} else if (queryResult.getFolder() != null) {
-			gwtQueryResult.setFolder(copy(queryResult.getFolder(), workspace));
-		} else if (queryResult.getMail() != null) {
-			gwtQueryResult.setMail(copy(queryResult.getMail(), workspace));
-		} else if (queryResult.getAttachment() != null) {
-			gwtQueryResult.setAttachment(copy(queryResult.getAttachment(), workspace));
-			gwtQueryResult.getAttachment().setAttachment(true);
-		}
+		if (queryResult.getNode() instanceof Document) {
+			if (!queryResult.isAttachment()) {
+				// Normal document
+				gwtQueryResult.setDocument(copy((Document) queryResult.getNode(), workspace));
+				gwtQueryResult.getDocument().setAttachment(false);
+			} else {
+				// Attachment
+				gwtQueryResult.setAttachment(copy((Document) queryResult.getNode(), workspace));
+				gwtQueryResult.getAttachment().setAttachment(true);
+			}			
+		} else if (queryResult.getNode() instanceof Folder) {
+			gwtQueryResult.setFolder(copy((Folder) queryResult.getNode(), workspace));
+		} else if (queryResult.getNode() instanceof Mail) {
+			gwtQueryResult.setMail(copy((Mail) queryResult.getNode(), workspace));
+		} 
 
 		gwtQueryResult.setExcerpt(queryResult.getExcerpt());
 		gwtQueryResult.setScore(queryResult.getScore());
